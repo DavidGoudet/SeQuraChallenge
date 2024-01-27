@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_26_174551) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_27_130651) do
   create_table "disbursements", force: :cascade do |t|
     t.integer "merchant_id", null: false
     t.decimal "amount", precision: 10, scale: 2
@@ -34,6 +34,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_26_174551) do
     t.index ["reference"], name: "index_merchants_on_reference", unique: true
   end
 
+  create_table "minimum_extra_fees", force: :cascade do |t|
+    t.decimal "fee_amount", precision: 10, scale: 2
+    t.integer "merchant_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["merchant_id"], name: "index_minimum_extra_fees_on_merchant_id"
+  end
+
   create_table "orders", force: :cascade do |t|
     t.decimal "amount", precision: 10, scale: 2
     t.string "internal_id", null: false
@@ -45,4 +53,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_26_174551) do
   end
 
   add_foreign_key "disbursements", "merchants"
+  add_foreign_key "minimum_extra_fees", "merchants"
 end

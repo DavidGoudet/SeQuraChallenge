@@ -7,6 +7,7 @@ RSpec.describe Disbursement, type: :model do
     let(:merchant) { create(:merchant) }
     let!(:eligible_order1) { create(:order, merchant: merchant, amount: 100.0) }
     let!(:eligible_order2) { create(:order, merchant: merchant, amount: 200.0) }
+    let!(:eligible_order3) { create(:order, merchant: merchant, amount: 200.0) }
     let!(:ineligible_order) { create(:order, merchant: merchant, amount: 50.0) }
 
     it 'calculates the disbursement for a merchant with daily frequency' do
@@ -55,6 +56,24 @@ RSpec.describe Disbursement, type: :model do
       expect do
         Disbursement.calculate_for_merchant(merchant)
       end.not_to change(Disbursement, :count)
+    end
+
+    it 'calculates the disbursement correctly for several pricing levels' do
+      merchant.update(disbursement_frequency: 'daily')
+      order1 = merchant.orders.first
+      order2 = merchant.orders.second
+      order3 = merchant.orders.third
+      order1.update(created_at: Time.now.utc, amount: 13.4) # Fee: 0.13
+      order2.update(created_at: Time.now.utc, amount: 50) # Fee: 0.48
+      order3.update(created_at: Time.now.utc, amount: 350) # Fee: 2.98
+
+      expect do
+        Disbursement.calculate_for_merchant(merchant)
+      end.to change(Disbursement, :count).by(1)
+
+      disbursement = Disbursement.last
+      expect(disbursement.amount).to eq(409.81)
+      expect(disbursement.fee).to eq(3.59)
     end
   end
 end
