@@ -4,7 +4,7 @@ require 'byebug'
 namespace :csv_import do
     desc "Import data from CSV files"
     task merchants: :environment do
-      filename = Rails.root.join('app', 'data', 'merchants.csv')
+      filename = Rails.root.join('app/data/merchants.csv')
 
       CSV.foreach(filename, headers: true, col_sep: ';') do |row|
         Merchant.find_or_create_by(internal_id: row['id']) do |merchant|
@@ -20,7 +20,7 @@ namespace :csv_import do
     end
   
     task orders: :environment do
-      filename = Rails.root.join('app', 'data', 'orders.csv')
+      filename = Rails.root.join('app/data/orders.csv')
   
       CSV.foreach(filename, headers: true, col_sep: ';') do |row|
         merchant = Merchant.find_by(reference: row['merchant_reference'])
