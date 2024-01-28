@@ -43,8 +43,8 @@ The following table includes the results of calculating the stats for 2 years wi
 
 | Year  | Number of Disbursements   |  Amount disbursed to merchants | Amount of order fees  | Number of monthly fees charged (From minimum monthly fee)  | Amount of monthly fee charged (From minimum monthly fee) |
 |---|---|---|---|---| --- |
-|  2022 | 2167  |  38439158.23 |  347319.4 | 379 | 9272.03 |
-| 2023   | 13329   |  187054761.6 | 1695618.73  | 108  | 2108.9 |
+|  2022 | 2167  |  38,439,158.23€ |  347,319.4€ | 379 | 9,272.03€ |
+| 2023   | 13329   |  187,054,761.6€ | 1,695,618.73€  | 108  | 2,108.9€ |
 
 ### Notes
 
