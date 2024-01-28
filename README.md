@@ -12,6 +12,7 @@ The app uses the Ruby on Rails framework to work. To test it in a local environm
 
 - Install Ruby and Ruby on Rails on your local machine: [Ruby on Rails Installation Instructions](https://web.stanford.edu/~ouster/cgi-bin/cs142-fall10/railsInstall.php)
 - Run ```bundle install``` to install the gems defined in the Gemfile
+- Run the migrations with ```rails db:migrate```
 
 ### Features
 
