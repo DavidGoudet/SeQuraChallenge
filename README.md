@@ -24,13 +24,18 @@ The app uses the Ruby on Rails framework to work. To test it in a local environm
 ### Use instructions
 
 - Save on ```app/data``` the csv files that are going to be calculated:
+
 -- ```merchants.csv``` and ```orders.csv```
 - Load the data to the database with the rakes:
+
 -- ```rake csv_import:merchants```
+
 -- ```rake csv_import:orders```
 - Calculate and store the disbursements with the rake (2023 is a variable for the year):
+
 -- ```rake 'year_calculator:run_year_disbursements[2023]'```
 - Run and print the calculations for the stats of a year:
+
 -- ```rake 'year_calculator:calculate[2023]'```
 
 ### Disbursement calculations
