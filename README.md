@@ -6,6 +6,7 @@ This app calculates and persist the disbursements that need to be paid to mercha
 - Rails 7.1.3
 - Ruby 3.3.0
 - SQLite 3.39.5
+- RSpec > 5.0
 
 ### Installation instructions
 The app uses the Ruby on Rails framework to work. To test it in a local environment you need to:
@@ -50,3 +51,5 @@ The following table includes the results of calculating the stats for 2 years wi
 
 - To calculate a daily merchant's disbursements, I calculated the orders generated from the previous day after 8:00 UTC to those generated on the current day before that same hour.
 - Rails was used to take advantage of the ORM, but all tasks are inside Rakes. In a real scenario, I would move the logic to APIs to ingest the new information, services to make the calculations, and a visual UI to make it easier for the client to use the tool.
+- There are two sets of tests, made for the critical methods in the models, one for Disbursement and other for MinimumExtraFee, they can be run with ```rspec```.
+- The calculations could be faster if we add a field ```year``` to the disbursements and minimum extra fees. I would add an index to that field because that query is recurrent.
