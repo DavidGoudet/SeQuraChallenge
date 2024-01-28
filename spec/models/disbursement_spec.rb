@@ -1,6 +1,7 @@
 # spec/models/disbursement_spec.rb
 
 require 'rails_helper'
+require 'timecop'
 
 RSpec.describe Disbursement, type: :model do
   describe '.calculate_for_merchant' do
@@ -15,7 +16,7 @@ RSpec.describe Disbursement, type: :model do
     it 'calculates the disbursement for a merchant with daily frequency' do
       merchant.update(disbursement_frequency: 'daily')
       order = merchant.orders.first
-      order.update(created_at: Time.now.utc, amount: 350)
+      order.update(created_at: Time.now.utc.beginning_of_day + 2.hours, amount: 350)
 
       expect do
         described_class.calculate_for_merchant(merchant)
@@ -43,7 +44,7 @@ RSpec.describe Disbursement, type: :model do
 
       disbursement = described_class.last
       expect(disbursement.amount).to eq(51.51)
-      expect(disbursement.fee).to eq(0.49) # Adjust based on your fee calculation logic
+      expect(disbursement.fee).to eq(0.49)
     end
 
     it 'does not calculate the disbursement for a merchant with weekly frequency on the wrong day' do
@@ -65,9 +66,10 @@ RSpec.describe Disbursement, type: :model do
       order1 = merchant.orders.first
       order2 = merchant.orders.second
       order3 = merchant.orders.third
-      order1.update(created_at: Time.now.utc, amount: 13.4) # Fee: 0.13
-      order2.update(created_at: Time.now.utc, amount: 50) # Fee: 0.48
-      order3.update(created_at: Time.now.utc, amount: 350) # Fee: 2.98
+      today_morning = Time.now.utc.beginning_of_day + 2.hours
+      order1.update(created_at: today_morning, amount: 13.4) # Fee: 0.13
+      order2.update(created_at: today_morning, amount: 50) # Fee: 0.48
+      order3.update(created_at: today_morning, amount: 350) # Fee: 2.98
 
       expect do
         described_class.calculate_for_merchant(merchant)
@@ -76,6 +78,23 @@ RSpec.describe Disbursement, type: :model do
       disbursement = described_class.last
       expect(disbursement.amount).to eq(409.81)
       expect(disbursement.fee).to eq(3.59)
+    end
+
+    it 'calculates only for orders created before 8:00 UTC' do
+      merchant.update(disbursement_frequency: 'weekly', live_on: Time.now.utc)
+      order = merchant.orders.first
+      order.update(created_at: (Time.now.utc-8.days).beginning_of_day + 10.hours, amount: 52)
+      order2 = merchant.orders.second
+      order2.update(created_at: Time.now.utc.beginning_of_day + 10.hours, amount: 40)
+
+      expect do
+        described_class.calculate_for_merchant(merchant)
+      end.to change(described_class, :count).by(1)
+
+      disbursement = described_class.last
+      # It should only calculate the first order
+      expect(disbursement.amount).to eq(51.51)
+      expect(disbursement.fee).to eq(0.49)
     end
   end
 end

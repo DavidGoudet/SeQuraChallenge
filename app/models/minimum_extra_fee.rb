@@ -1,9 +1,8 @@
 class MinimumExtraFee < ApplicationRecord
   belongs_to :merchant
 
-  def self.calculate_minimum_reached(merchant)
-    if self.is_first_day(merchant)
-      current_time_utc = Time.now.utc
+  def self.calculate_minimum_reached(merchant, current_time_utc = Time.now.utc)
+    if self.is_first_day(merchant, current_time_utc)
       first_day_of_previous_month = current_time_utc.prev_month.beginning_of_month
       previous_month_range = first_day_of_previous_month..first_day_of_previous_month.end_of_month
       eligible_orders = merchant.orders.where(created_at: previous_month_range)
@@ -12,15 +11,14 @@ class MinimumExtraFee < ApplicationRecord
       net_amount = total_amount - total_fee
       amount_to_reach_minimum_fee = [0, merchant.minimum_monthly_fee - total_fee].max
       if total_fee < amount_to_reach_minimum_fee
-        create(fee_amount: amount_to_reach_minimum_fee, merchant: merchant)
+        create(fee_amount: amount_to_reach_minimum_fee, merchant: merchant, created_at: current_time_utc)
       end
     end
   end
 
   private
 
-  def self.is_first_day(merchant)
-    current_time_utc = Time.now.utc
+  def self.is_first_day(merchant, current_time_utc)
     current_day_of_month = current_time_utc.day
     current_day_of_week = current_time_utc.wday
     if merchant.disbursement_frequency == 'weekly' && merchant.live_on.present?
